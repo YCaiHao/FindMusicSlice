@@ -62,6 +62,9 @@ def processMP3 (name, path, destPath):
     if result is not None:
         # 删除中间.wav文件
         os.remove(wavPath)
+        return True
+    else:
+        return False    
 
 
 def removeDir (path):
