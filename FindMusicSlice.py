@@ -102,7 +102,7 @@ if __name__ == "__main__":
             print(f"写出[{mp3Path}]完成。。。")
         
         # 导出json文件
-        jsonFilePath = os.path.join(musicDirPath + "MusicInfo.json")
+        jsonFilePath = os.path.join(musicDirPath, "MusicInfo.json")
         with open(jsonFilePath, "w") as f:
             json.dump(musicJSON, f)
             print(f"写出[{jsonFilePath}]完成。。。")
