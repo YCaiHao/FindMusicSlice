@@ -12,7 +12,7 @@ def getNPList (path):
     """
     l = []
     # 遍历文件，把所有mp3文件加入数组
-    for _, __, files in os.walk(path):
+    for root, dirs, files in os.walk(path):
         for file in files:
             # name: 文件名， ext： 文件后缀
             name, ext = os.path.splitext(file)
@@ -35,8 +35,10 @@ def processMP3 (name, path, destPath, gain=-15.0):
     """
         处理mp3音频文件，找寻音乐高潮部分，生产新的mp3文件，并添加渐入渐出效果
     """
-    # 渐入渐出时长
-    FADE_DURATION = 4000
+    # 渐入时长
+    FADE_IN_DURATION = 3000
+    # 渐出
+    FADE_OUT_DURATION = 4000
     # 音频长度（s）
     CLIP_LENGTH = 20
 
@@ -52,9 +54,9 @@ def processMP3 (name, path, destPath, gain=-15.0):
         snd = getRandomMP3(path, CLIP_LENGTH)
 
     # 渐入
-    snd = snd.fade(from_gain=gain, start=0, duration=FADE_DURATION)
+    snd = snd.fade(from_gain=gain, start=0, duration=FADE_IN_DURATION)
     # 渐出
-    snd = snd.fade(to_gain=gain, start=len(snd) - FADE_DURATION, duration=FADE_DURATION)
+    snd = snd.fade(to_gain=gain, start=len(snd) - FADE_OUT_DURATION, duration=FADE_OUT_DURATION)
     # 导出音乐高潮文件，格式为mp3
     mp3Path = os.path.join(destPath, name + ".mp3")
     snd.export(mp3Path)
@@ -71,7 +73,7 @@ def removeDir (path):
     """
         删除指定文件夹内的所有内容包括这个文件夹本身
     """
-    for _, dirs, files in os.walk(path):
+    for root, dirs, files in os.walk(path):
         for f in files:
             os.remove(os.path.join(path, f))
         for d in dirs:
@@ -87,13 +89,12 @@ if __name__ == "__main__":
             print("路径输入错误，需要文件路径")
             exit(0)
 
-        nameAndPathList = getNPList(topPath)
-
         musicDirPath = os.path.join(topPath, "music")
         if os.path.exists(musicDirPath):
             removeDir(musicDirPath)
-
         os.mkdir(musicDirPath)
+
+        nameAndPathList = getNPList(topPath)
         musicJSON = []
         for name, path in nameAndPathList:
             processMP3(name, path, musicDirPath)
