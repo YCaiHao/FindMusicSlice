@@ -12,7 +12,7 @@ def getNPList (path):
     """
     l = []
     # 遍历文件，把所有mp3文件加入数组
-    for root, dirs, files in os.walk(path):
+    for _, __, files in os.walk(path):
         for file in files:
             # name: 文件名， ext： 文件后缀
             name, ext = os.path.splitext(file)
@@ -31,12 +31,12 @@ def getRandomMP3(path, clip_length):
     return snd[random:random + clip_length * 1000]
 
 
-def processMP3 (name, path, destPath):
+def processMP3 (name, path, destPath, gain=-15.0):
     """
         处理mp3音频文件，找寻音乐高潮部分，生产新的mp3文件，并添加渐入渐出效果
     """
     # 渐入渐出时长
-    FADE_DURATION = 3000
+    FADE_DURATION = 4000
     # 音频长度（s）
     CLIP_LENGTH = 20
 
@@ -50,11 +50,11 @@ def processMP3 (name, path, destPath):
     else:
         #当找不到音乐高潮时，采用随机的方式获取
         snd = getRandomMP3(path, CLIP_LENGTH)
-    
+
     # 渐入
-    snd = snd.fade(from_gain=-15.0, start=0, duration=FADE_DURATION)
+    snd = snd.fade(from_gain=gain, start=0, duration=FADE_DURATION)
     # 渐出
-    snd = snd.fade(to_gain=-15.0, start=len(snd) - FADE_DURATION, duration=FADE_DURATION)
+    snd = snd.fade(to_gain=gain, start=len(snd) - FADE_DURATION, duration=FADE_DURATION)
     # 导出音乐高潮文件，格式为mp3
     mp3Path = os.path.join(destPath, name + ".mp3")
     snd.export(mp3Path)
@@ -71,7 +71,7 @@ def removeDir (path):
     """
         删除指定文件夹内的所有内容包括这个文件夹本身
     """
-    for root, dirs, files in os.walk(path):
+    for _, dirs, files in os.walk(path):
         for f in files:
             os.remove(os.path.join(path, f))
         for d in dirs:
