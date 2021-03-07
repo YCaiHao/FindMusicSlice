@@ -99,7 +99,7 @@ if __name__ == "__main__":
         for name, path in nameAndPathList:
             processMP3(name, path, musicDirPath)
             mp3Path = os.path.join(musicDirPath, name + ".mp3")
-            musicJSON.append({name: "music" + "/" + name + ".mp3"})
+            musicJSON.append({"name": name, "url": "music" + "/" + name + ".mp3"})
             print(f"写出[{mp3Path}]完成。。。")
         
         # 导出json文件
