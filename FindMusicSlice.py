@@ -2,9 +2,13 @@ import os
 import json
 from random import randint
 from sys import argv
+from xpinyin import Pinyin
 from pychorus import find_and_output_chorus
 from pydub import AudioSegment
 
+def get_pin_yin(chinese):
+    py = Pinyin()
+    return py.get_pinyin(chinese, tone_marks='numbers', splitter='_')
 
 def getNPList (path):
     """
@@ -58,7 +62,7 @@ def processMP3 (name, path, destPath, gain=-15.0):
     # 渐出
     snd = snd.fade(to_gain=gain, start=len(snd) - FADE_OUT_DURATION, duration=FADE_OUT_DURATION)
     # 导出音乐高潮文件，格式为mp3
-    mp3Path = os.path.join(destPath, name + ".mp3")
+    mp3Path = os.path.join(destPath, get_pin_yin(name) + ".mp3")
     snd.export(mp3Path)
 
     if result is not None:
@@ -66,7 +70,7 @@ def processMP3 (name, path, destPath, gain=-15.0):
         os.remove(wavPath)
         return True
     else:
-        return False    
+        return False
 
 
 def removeDir (path):
@@ -98,8 +102,9 @@ if __name__ == "__main__":
         musicJSON = []
         for name, path in nameAndPathList:
             processMP3(name, path, musicDirPath)
-            mp3Path = os.path.join(musicDirPath, name + ".mp3")
-            musicJSON.append({"name": name, "url": "music" + "/" + name})
+            pinyin = get_pin_yin(name)
+            mp3Path = os.path.join(musicDirPath, pinyin + ".mp3")
+            musicJSON.append({"name": pinyin, "url": "music" + "/" + pinyin})
             print(f"写出[{mp3Path}]完成。。。")
         
         # 导出json文件
